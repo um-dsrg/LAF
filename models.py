@@ -11,8 +11,9 @@ import os
 from os import listdir
 from skimage import io
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    
+
+#device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = 'cpu'   
 class LAFNet_CVPR2019(nn.Module):
     def __init__(self):
         super(LAFNet_CVPR2019, self).__init__()       
@@ -109,9 +110,14 @@ class LAFNet_CVPR2019(nn.Module):
 
     def forward(self, cost, disp, imag):
         # feature extraction networks
-        x = self.softmax(-self.L2normalize(cost)*100)
-        x = torch.topk(x, k=7, dim=1).values
-        
+        set_k = 7
+        chan_cost = cost.size()[1]
+        if chan_cost==set_k:
+            x = cost
+        else:
+            x = self.softmax(-self.L2normalize(cost)*100)
+            x = torch.topk(x, k=set_k, dim=1).values
+
         x = F.relu(self.cost_bn1(self.cost_conv1(x)))
         x = F.relu(self.cost_bn2(self.cost_conv2(x)))
         cost_x = F.relu(self.cost_bn3(self.cost_conv3(x)))

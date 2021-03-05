@@ -10,8 +10,8 @@ import torchvision.transforms.functional as TF
 import os
 from os import listdir
 from skimage import io
-import models
-import datasets
+import LAF.models
+import LAF.datasets
 
 def BCE2d(output, gt_conf, size_average=True):
     BCE = nn.BCELoss(reduction='sum')
